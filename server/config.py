@@ -10,10 +10,10 @@ import os
 
 # Remote library imports
 from flask import Flask  # pyright: ignore[reportMissingImports]
-from flask_cors import CORS  # pyright: ignore[reportMissingModuleSource]
-from flask_migrate import Migrate  # pyright: ignore[reportMissingModuleSource]
-from flask_restful import Api  # pyright: ignore[reportMissingImports]
 from flask_sqlalchemy import SQLAlchemy  # pyright: ignore[reportMissingImports]
+from flask_cors import CORS  # pyright: ignore[reportMissingModuleSource]
+from flask_restful import Api  # pyright: ignore[reportMissingImports]
+from flask_migrate import Migrate  # pyright: ignore[reportMissingModuleSource]
 from flask_bcrypt import Bcrypt  # pyright: ignore[reportMissingImports]
 from dotenv import load_dotenv  # pyright: ignore[reportMissingImports]
 
