@@ -1,3 +1,6 @@
+from sqlalchemy.ext.hybrid import (  # pyright: ignore[reportMissingImports]
+    hybrid_property,
+)  # pyright: ignore[reportMissingImports]
 from sqlalchemy_serializer import (  # pyright: ignore[reportMissingImports]
     SerializerMixin,
 )  # pyright: ignore[reportMissingImports]
@@ -20,6 +23,27 @@ class User(db.Model, SerializerMixin):
     _password_hash = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=db.func.now(), nullable=False)
     last_updated = db.Column(db.DateTime, onupdate=db.func.now())
+
+    @hybrid_property
+    def password_hash(self):
+        """Restriction for user. Prevents user from accessing password hash.
+
+        Raises:
+            AttributeError: if an attempt to access the password hash has been made.
+        """
+        raise AttributeError("Password hash cannot be viewed.")
+
+    @password_hash.setter
+    def password_hash(self, password):
+        """Sets a new password for user and rehashes it.
+
+        Args:
+            password (str): the new password.
+        """
+        # print("Setting new password", flush=True)
+        password_hash = bcrypt.generate_password_hash(password.encode("utf-8"))
+        self._password_hash = password_hash.decode("utf-8")
+        # print("Password set successful!", flush=True)
 
     def __repr__(self):
         return "TO BE IMPLEMENTED"
