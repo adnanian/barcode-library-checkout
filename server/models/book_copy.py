@@ -21,8 +21,8 @@ class BookCopy(db.Model, SerializerMixin):
 
     # Relationships
 
-    # book_id = db.Column(db.Integer, db.ForeignKey("books.id"), nullable=False)
-    # book = db.relationship("Book", backref=db.backref("copies", lazy=True))
+    book_id = db.Column(db.Integer, db.ForeignKey("books.id"), nullable=False)
+    book = db.relationship("Book", backref=db.backref("copies", lazy=True))
 
     def __repr__(self):
         return "TO BE IMPLEMENTED"

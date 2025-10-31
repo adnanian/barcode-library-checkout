@@ -2,7 +2,6 @@
 server/.env
 server/__pycache__/
 server/*.pyc
-server/migrations/
 server/instance/
 
 # Client
