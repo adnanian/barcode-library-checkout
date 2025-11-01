@@ -11,6 +11,11 @@ class Checkout(db.Model, SerializerMixin):
     It tracks which user has checked out which book copy and relevant timestamps.
     """
 
+    serialize_rules = (
+        "-user.checkouts",
+        "-book_copy.checkouts",
+    )
+
     __tablename__ = "checkouts"
 
     id = db.Column(db.Integer, primary_key=True)

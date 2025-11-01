@@ -12,12 +12,23 @@ class Book(db.Model, SerializerMixin):
     This model holds bibliographic information about the book.
     """
 
+    serialize_rules = (
+        "-book_copies.checkouts",
+        "-book_copies.book",
+    )
+
     __tablename__ = "books"
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
     author = db.Column(db.String, nullable=False)
     year = db.Column(db.Integer, nullable=False)
+
+    # Relationships
+
+    book_copies = db.relationship(
+        "BookCopy", back_populates="book", cascade="all, delete-orphan", lazy=True
+    )
 
     def __repr__(self):
         return "TO BE IMPLEMENTED"

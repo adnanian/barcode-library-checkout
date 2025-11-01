@@ -4,8 +4,12 @@ from sqlalchemy.ext.hybrid import (  # pyright: ignore[reportMissingImports]
 from sqlalchemy_serializer import (  # pyright: ignore[reportMissingImports]
     SerializerMixin,
 )  # pyright: ignore[reportMissingImports]
+from sqlalchemy.ext.associationproxy import (  # pyright: ignore[reportMissingImports]
+    association_proxy,
+)  # pyright: ignore[reportMissingImports]
 from sqlalchemy.orm import validates  # pyright: ignore[reportMissingImports]
 from config import db, bcrypt
+from models.checkout import Checkout
 
 
 class User(db.Model, SerializerMixin):
@@ -13,6 +17,13 @@ class User(db.Model, SerializerMixin):
     Person that is physically using the Barcode Library Scanner.
     A user can check out books and return them.
     """
+
+    serialize_rules = (
+        "-checkouts.user",
+        "-checkouts.book_copy.checkouts",
+        "-book_copies.checkouts",
+        "-_password_hash",
+    )
 
     __tablename__ = "users"
 
@@ -23,6 +34,18 @@ class User(db.Model, SerializerMixin):
     _password_hash = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=db.func.now(), nullable=False)
     last_updated = db.Column(db.DateTime, onupdate=db.func.now())
+
+    # Relationships
+
+    checkouts = db.relationship(
+        "Checkout", back_populates="user", cascade="all, delete-orphan", lazy=True
+    )
+
+    # Association Proxies
+
+    book_copies = association_proxy(
+        "checkouts", "book_copy", creator=lambda bc: Checkout(book_copy=bc)
+    )
 
     @hybrid_property
     def password_hash(self):

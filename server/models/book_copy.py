@@ -11,6 +11,8 @@ class BookCopy(db.Model, SerializerMixin):
     Each copy of a book is serialized individually to track its availability.
     """
 
+    serialize_rules = ()
+
     __tablename__ = "book_copies"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -23,6 +25,10 @@ class BookCopy(db.Model, SerializerMixin):
 
     book_id = db.Column(db.Integer, db.ForeignKey("books.id"), nullable=False)
     book = db.relationship("Book", backref=db.backref("copies", lazy=True))
+
+    checkouts = db.relationship(
+        "Checkout", back_populates="book_copy", cascade="all, delete-orphan", lazy=True
+    )
 
     def __repr__(self):
         return "TO BE IMPLEMENTED"
