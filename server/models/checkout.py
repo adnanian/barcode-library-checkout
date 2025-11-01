@@ -27,12 +27,12 @@ class Checkout(db.Model, SerializerMixin):
     # Relationships
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    user = db.relationship("User", backref=db.backref("checkouts", lazy=True))
+    user = db.relationship("User", back_populates="checkouts")
 
     book_copy_id = db.Column(
         db.Integer, db.ForeignKey("book_copies.id"), nullable=False
     )
-    book_copy = db.relationship("BookCopy", backref=db.backref("checkouts", lazy=True))
+    book_copy = db.relationship("BookCopy", back_populates="checkouts")
 
     def __repr__(self):
         return "TO BE IMPLEMENTED"

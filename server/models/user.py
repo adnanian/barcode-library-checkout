@@ -4,9 +4,6 @@ from sqlalchemy.ext.hybrid import (  # pyright: ignore[reportMissingImports]
 from sqlalchemy_serializer import (  # pyright: ignore[reportMissingImports]
     SerializerMixin,
 )  # pyright: ignore[reportMissingImports]
-from sqlalchemy.ext.associationproxy import (  # pyright: ignore[reportMissingImports]
-    association_proxy,
-)  # pyright: ignore[reportMissingImports]
 from sqlalchemy.orm import validates  # pyright: ignore[reportMissingImports]
 from config import db, bcrypt
 from models.checkout import Checkout
@@ -39,12 +36,6 @@ class User(db.Model, SerializerMixin):
 
     checkouts = db.relationship(
         "Checkout", back_populates="user", cascade="all, delete-orphan", lazy=True
-    )
-
-    # Association Proxies
-
-    book_copies = association_proxy(
-        "checkouts", "book_copy", creator=lambda bc: Checkout(book_copy=bc)
     )
 
     @hybrid_property

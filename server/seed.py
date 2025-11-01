@@ -2,10 +2,12 @@ import os
 
 from config import db, app
 from models._models import *
+from random import randint
 
 
 def clear_tables():
-    pass
+    """Clears all tables in the database."""
+    success = True
     for table in reversed(db.metadata.sorted_tables):
         try:
             # Use the db.session.execute() method provided by Flask-SQLAlchemy
@@ -14,19 +16,29 @@ def clear_tables():
         except Exception as e:
             print(f"Error truncating table {table.name}: {e}")
             db.session.rollback()  # Rollback on error
+            success = False
+    if success:
+        db.session.commit()
+        print("All tables cleared successfully.")
+    else:
+        print("Some tables could not be cleared. See errors above.")
+        exit(1)
 
 
 def seed_users():
     """Seeds the users table with initial data."""
-    from seed_data.user_seed import USER_SEED  # type: ignore
+    if not (seed_password := os.getenv("SEED_PASSWORD")):
+        raise ValueError("SEED_PASSWORD environment variable is not set.")
+    from seed_data.user_seed import USER_SEED
 
     for user_data in USER_SEED:
         user = User(
             first_name=user_data["first_name"],
             last_name=user_data["last_name"],
             email=user_data["email"],
-            password_hash=os.getenv("SEED_PASSWORD"),
         )
+
+        user.password_hash = seed_password
         db.session.add(user)
     db.session.commit()
     print("Seeded users table.")
@@ -37,7 +49,7 @@ def seed_books():
     Seeds the books table with initial data.
     Goal is to seed at least 20 books.
     """
-    from seed_data.book_seed import BOOK_SEED  # type: ignore
+    from seed_data.book_seed import BOOK_SEED
 
     for book_data in BOOK_SEED:
         book = Book(
@@ -54,6 +66,19 @@ def seed_books():
 
 def seed_book_copies():
     pass  # Implement book copy seeding logic here
+    books = Book.query.all()
+    copies = []
+    for book in books:
+        num_copies = randint(1, 5)  # Randomly assign between 1 to 5 copies per book
+        for i in range(num_copies):
+            copy = BookCopy(
+                serial_no=f"{book.isbn}-C-{i}",
+                book_id=book.id,
+            )
+            copies.append(copy)
+    db.session.add_all(copies)
+    db.session.commit()
+    print("Seeded book copies table.")
 
 
 def seed_checkouts():
@@ -62,12 +87,11 @@ def seed_checkouts():
 
 if __name__ == "__main__":
     with app.app_context():
-        if not os.getenv("SEED_PASSWORD"):
-            raise ValueError("SEED_PASSWORD environment variable is not set.")
         # Clear all tables in the database
         clear_tables()
         # Seed the database with initial data
         seed_users()
         seed_books()
         seed_book_copies()
-        seed_checkouts()
+        # seed_checkouts()
+        print("Database seeding completed.")

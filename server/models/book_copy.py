@@ -24,7 +24,7 @@ class BookCopy(db.Model, SerializerMixin):
     # Relationships
 
     book_id = db.Column(db.Integer, db.ForeignKey("books.id"), nullable=False)
-    book = db.relationship("Book", backref=db.backref("copies", lazy=True))
+    book = db.relationship("Book", back_populates="book_copies")
 
     checkouts = db.relationship(
         "Checkout", back_populates="book_copy", cascade="all, delete-orphan", lazy=True
