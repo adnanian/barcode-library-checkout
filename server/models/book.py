@@ -23,6 +23,7 @@ class Book(db.Model, SerializerMixin):
     title = db.Column(db.String, nullable=False)
     author = db.Column(db.String, nullable=False)
     year = db.Column(db.Integer, nullable=False)
+    isbn = db.Column(db.String, unique=True, nullable=False)
 
     # Relationships
 
