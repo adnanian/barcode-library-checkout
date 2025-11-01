@@ -2,7 +2,6 @@ import os
 
 from config import db, app
 from models._models import *
-from random import randint
 
 
 def clear_tables():
@@ -66,18 +65,21 @@ def seed_books():
 
 def seed_book_copies():
     pass  # Implement book copy seeding logic here
-    books = Book.query.all()
     copies = []
-    for book in books:
-        num_copies = randint(1, 5)  # Randomly assign between 1 to 5 copies per book
-        for i in range(num_copies):
-            copy = BookCopy(
-                serial_no=f"{book.isbn}-C-{i}",
-                book_id=book.id,
-            )
-            copies.append(copy)
+    from seed_data.copy_seed import COPY_SEED
+
+    for copy_data in COPY_SEED:
+        book = Book.query.filter_by(isbn=copy_data["isbn"]).first()
+        if book:
+            for i in range(copy_data["copies"]):
+                copy = BookCopy(
+                    serial_no=f"{book.isbn}-C-{i+1}",
+                    book_id=book.id,
+                )
+                copies.append(copy)
     db.session.add_all(copies)
     db.session.commit()
+
     print("Seeded book copies table.")
 
 
