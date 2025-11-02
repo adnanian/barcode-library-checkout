@@ -64,7 +64,7 @@ def seed_books():
 
 
 def seed_book_copies():
-    pass  # Implement book copy seeding logic here
+    """Seeds the book_copies table with initial data."""
     copies = []
     from seed_data.copy_seed import COPY_SEED
 
@@ -84,7 +84,28 @@ def seed_book_copies():
 
 
 def seed_checkouts():
-    pass  # Implement checkout seeding logic here
+    """Seeds the checkouts table with initial data."""
+    checkouts = []
+    from seed_data.checkout_seed import CHECKOUT_SEED
+
+    for checkout_data in CHECKOUT_SEED:
+        user = User.query.filter_by(email=checkout_data["email"]).first()
+        book_copy = BookCopy.query.filter_by(
+            serial_no=checkout_data["book_copy_serial"]
+        ).first()
+        if user and book_copy:
+            checkout = Checkout(
+                checkout_date=checkout_data["checkout_date"],
+                due_date=checkout_data["due_date"],
+                return_date=checkout_data["return_date"],
+                user_id=user.id,
+                book_copy_id=book_copy.id,
+            )
+            checkouts.append(checkout)
+    db.session.add_all(checkouts)
+    db.session.commit()
+
+    print("Seeded checkouts table.")
 
 
 if __name__ == "__main__":
@@ -95,5 +116,5 @@ if __name__ == "__main__":
         seed_users()
         seed_books()
         seed_book_copies()
-        # seed_checkouts()
+        seed_checkouts()
         print("Database seeding completed.")
