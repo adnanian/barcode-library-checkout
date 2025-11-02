@@ -7,6 +7,7 @@ python-dotenv.
 
 # Standard library imports
 import os
+import secrets
 
 # Remote library imports
 from flask import Flask  # pyright: ignore[reportMissingImports]
@@ -22,6 +23,7 @@ load_dotenv()
 
 # Flask application
 app = Flask(__name__)
+app.config["SECRET_KEY"] = secrets.token_hex(32)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Keep JSON responses readable in development
