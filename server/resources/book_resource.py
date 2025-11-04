@@ -35,7 +35,6 @@ class BookResourceById(Resource):
 
     def patch(self, id):
         book = Book.query.get_or_404(id)
-        data = request.get_json()
 
         try:
             data = request.get_json()

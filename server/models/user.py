@@ -59,5 +59,16 @@ class User(db.Model, SerializerMixin):
         self._password_hash = password_hash.decode("utf-8")
         # print("Password set successful!", flush=True)
 
+    def authenticate(self, password):
+        """Check if user entered the correct password.
+
+        Args:
+            password (str): the password
+
+        Returns:
+            bool: if user entered the correct password; False otherwise.
+        """
+        return bcrypt.check_password_hash(self._password_hash, password.encode("utf-8"))
+
     def __repr__(self):
         return "TO BE IMPLEMENTED"
