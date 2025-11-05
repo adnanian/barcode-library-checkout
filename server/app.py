@@ -1,6 +1,7 @@
 # /usr/bin/env python3
 from config import app
 from models._models import *
+from resources._resources import *
 
 
 @app.route("/")
